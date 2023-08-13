@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Data Exploration</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<div id="charts"></div>
+
+<script>
+  // Load the CSV file using Fetch API
+  fetch('SoldPropertiesData.csv')
+    .then(response => response.text())
+    .then(csvData => {
+      // Parse CSV data
+      const data = csvData.split('\n').map(row => row.split(','));
+
+      // Extract headers and rows
+      const headers = data[0];
+      const rows = data.slice(1);
+
+      // Convert rows to objects
+      const formattedData = rows.map(row => {
+        const obj = {};
+        headers.forEach((header, index) => {
+          obj[header] = row[index];
+        });
+        return obj;
+      });
+
+      // Data exploration and visualization
+      const propertyTypes = formattedData.map(item => item.property_type);
+      const propertyTypeCounts = {};
+      propertyTypes.forEach(type => {
+        propertyTypeCounts[type] = (propertyTypeCounts[type] || 0) + 1;
+      });
+
+      const propertyTypeTrace = {
+        x: Object.keys(propertyTypeCounts),
+        y: Object.values(propertyTypeCounts),
+        type: 'bar'
+      };
+
+      const layout = {
+        title: 'Distribution of Property Types'
+      };
+
+      Plotly.newPlot('charts', [propertyTypeTrace], layout);
+    });
+</script>
+
+</body>
+</html>
